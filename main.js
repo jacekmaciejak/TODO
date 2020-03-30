@@ -75,10 +75,11 @@
 let toDoList = [];
 const inputSearch = document.querySelector(".search");
 const inputAdd = document.querySelector(".addTask");
-const ol = document.querySelector("ol");
-const liElements = document.getElementsByClassName("task");
+// const ol = document.querySelector("ol");
+const liElements = document.getElementsByClassName("taskBox");
 const form = document.querySelector("form");
 let taskNumber = document.querySelector("h1 span");
+const wrapper = document.querySelector(".wrapper");
 
 const searchTask = e => {
   const searchText = e.target.value.toLowerCase();
@@ -86,8 +87,8 @@ const searchTask = e => {
   tasks = toDoList.filter(li =>
     li.textContent.toLowerCase().includes(searchText)
   );
-  ol.textContent = "";
-  tasks.forEach(li => ol.appendChild(li));
+  wrapper.textContent = "";
+  tasks.forEach(li => wrapper.appendChild(li));
 };
 const removeNewTask = e => {
   e.target.parentNode.remove();
@@ -100,40 +101,61 @@ const removeNewTask = e => {
 const addTask = e => {
   e.preventDefault();
   const titleTask = inputAdd.value;
-  const task = document.createElement("li");
+  // const task = document.createElement("li");// ODZNACZYC ABY WROCIC DO PIERWOTNEJ WERSJI
+  const taskBox = document.createElement("div"); //
+  let task = document.createElement("input"); //
   const deleteBtn = document.createElement("button");
-  let time = timeSet();
+  const editBtn = document.createElement("button");
+  const time = timeSet();
 
   if (titleTask === "" || titleTask.length <= 3) {
     alert("Wpisz minimum 6 znakow!");
     inputAdd.value = "";
     return;
   }
+  //---------------------------
+
   task.className = "task";
+  task.disabled = true; //
+  task.type = "text"; //
+
+  //-----------------------------
   deleteBtn.className = "deleteBtn";
+  editBtn.className = "editBtn";
+  taskBox.className = "taskBox"; //
+
   deleteBtn.appendChild(document.createTextNode("X"));
+  editBtn.appendChild(document.createTextNode("EDIT"));
   task.innerHTML = titleTask;
   toDoList.push(task);
   renderList();
   addBackground();
-  task.appendChild(deleteBtn);
-  ol.appendChild(task);
+  // task.appendChild(deleteBtn);
+  // task.appendChild(editBtn);
+  // ol.appendChild(task);
+  taskBox.appendChild(task); //
+  taskBox.appendChild(deleteBtn); //
+  taskBox.appendChild(editBtn); //
+  wrapper.appendChild(taskBox); //
   inputAdd.value = "";
   taskNumber.textContent = liElements.length;
-  task.querySelector(".deleteBtn").addEventListener("click", removeNewTask);
+  taskBox.querySelector(".deleteBtn").addEventListener("click", removeNewTask);
+  taskBox.querySelector(".editBtn").addEventListener("click", () => {
+    task.disabled = !task.disabled;
+  }); //
 };
 
 const renderList = () => {
-  ol.textContent = "";
+  wrapper.textContent = "";
   toDoList.forEach((toDoElement, key) => {
     toDoElement.dataset.key = key;
-    ol.appendChild(toDoElement);
+    wrapper.appendChild(toDoElement);
   });
 };
 
 //Zmieniamy kolor t?a dla nieparzystych
 const addBackground = () => {
-  const odd = document.querySelectorAll("li:nth-child(odd)");
+  const odd = document.querySelectorAll("div:nth-child(odd)"); // zamiast div bylo li
   for (let i = 0; i < odd.length; i++) {
     odd[i].style.backgroundColor = "#f4f4f4";
   }
@@ -158,19 +180,6 @@ const timeSet = () => {
   data.innerHTML = `${hours} : ${minutes} : ${seconds} || ${day} - ${month} - ${year} r.`;
 };
 
-// const clock = () => {
-//   const time = new Date();
-//   const seconds =
-//     time.getSeconds() < 10 ? "0" + time.getSeconds() : time.getSeconds();
-//   const minutes =
-//     time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes();
-//   const hours = time.getHours() < 10 ? "0" + time.getHours() : time.getHours();
-//   document.querySelector(
-//     "span"
-//   ).innerHTML = `${hours} : ${minutes} : ${seconds}`;
-// };
-// setInterval(clock, 1000);
-
 inputSearch.addEventListener("input", searchTask);
 form.addEventListener("submit", addTask);
 
@@ -184,6 +193,6 @@ form.addEventListener("submit", addTask);
 //   document.querySelector(`li[data-key = "${index}"]`).remove();
 // };
 
-document
-  .querySelectorAll("button[data-key]")
-  .forEach(item => item.addEventListener("click", removeTask));
+// document
+//   .querySelectorAll("button[data-key]")
+//   .forEach(item => item.addEventListener("click", removeTask));

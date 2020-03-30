@@ -26,7 +26,13 @@
         }
 
         input:focus {
-            border: 2px solid lightgreen;
+            border: 2px solid greenyellow;
+        }
+
+        .task {
+            background: none;
+            outline: none;
+            /* border: none; */
         }
 
         .search {
@@ -79,6 +85,9 @@
             padding: 10px;
             font-size: 20px;
             cursor: pointer;
+            border-radius: 25px;
+            outline: none;
+            background-color: greenyellow;
         }
 
         .deleteBtn {
@@ -87,6 +96,17 @@
             font-size: 18px;
             padding: 5px 10px;
             float: right;
+            border: none;
+            margin-left: 10px;
         }
 
-        /*-------------BUTTONS----------*/
+        .editBtn {
+            cursor: pointer;
+            background-color: greenyellow;
+            font-size: 18px;
+            padding: 5px 10px;
+            float: right;
+            border: none;
+        }
+
+        /*-------------END BUTTONS----------*/
