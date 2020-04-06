@@ -1,14 +1,56 @@
+let lists = [
+  {
+    id: 1,
+    name: "aaaaaa"
+  },
+  {
+    id: 2,
+    name: "todo"
+  }
+];
 let toDoList = [];
+const listsContainer = document.querySelector("[data-lists]");
+const newListForm = document.querySelector("[data-new-list-form]");
+const newListInput = document.querySelector("[data-new-list-input]");
 const inputSearch = document.querySelector(".search");
 const inputAdd = document.querySelector(".addTask");
 const liElements = document.getElementsByClassName("taskBox");
 const form = document.querySelector("form");
 const wrapper = document.querySelector(".wrapper");
 let taskNumber = document.querySelector("h1 span");
-const clock = document.createElement('div')
-clock.className = 'clock'
-const taskBox = document.createElement("div");
-taskBox.className = "taskBox";
+const clock = document.createElement("div");
+clock.className = "clock";
+
+newListForm.addEventListener("submit", e => {
+  e.preventDefault();
+  const listName = newListInput.value;
+  if (listName == null || listName === "") return;
+  const list = createList(listName);
+  newListInput.value = null;
+  lists.push(list);
+  render();
+});
+
+function createList(name) {
+  return { id: Date.now().toString(), name: name, tasks: [] };
+}
+
+function render() {
+  clearElement(listsContainer);
+  lists.forEach(list => {
+    const listElement = document.createElement("li");
+    listElement.dataset.listId = list.id;
+    listElement.classList.add("list-name");
+    listElement.innerText = list.name;
+    listsContainer.appendChild(listElement);
+  });
+}
+function clearElement(element) {
+  while (element.firstChild) {
+    element.removeChild(element.firstChild);
+  }
+}
+render();
 
 // const abc = () => {
 //   clock.className = 'clock'
@@ -16,7 +58,6 @@ taskBox.className = "taskBox";
 //   timeSet()
 // }
 // abc()
-
 
 const searchTask = e => {
   const searchText = e.target.value.toLowerCase();
@@ -37,8 +78,9 @@ const removeNewTask = e => {
 
 const addTask = e => {
   e.preventDefault();
+  const taskBox = document.createElement("div");
+  taskBox.className = "taskBox";
   const titleTask = inputAdd.value;
-
   const task = document.createElement("textarea");
   task.className = "task";
   task.disabled = true;
@@ -61,8 +103,6 @@ const addTask = e => {
   taskBox.appendChild(task);
   taskBox.appendChild(editBtn);
   taskBox.appendChild(deleteBtn);
-  // taskBox.appendChild(clock);
-  // timeSet()
   wrapper.appendChild(taskBox);
   addBackground();
   inputAdd.value = "";
@@ -70,8 +110,6 @@ const addTask = e => {
   taskBox.querySelector(".deleteBtn").addEventListener("click", removeNewTask);
   taskBox.querySelector(".editBtn").addEventListener("click", () => {
     task.disabled = !task.disabled;
-    toDoList.push(task);
-
   });
 };
 
@@ -83,7 +121,7 @@ const renderList = () => {
   });
 };
 
-//Zmieniamy kolor t?a dla nieparzystych
+//Zmiana kolor t?a dla nieparzystych
 const addBackground = () => {
   const odd = document.querySelectorAll("div:nth-child(odd)"); // zamiast div bylo li
   for (let i = 0; i < odd.length; i++) {
@@ -91,7 +129,7 @@ const addBackground = () => {
   }
 };
 
-//Pobieramy date i godzine dodania zadania
+//Pobieranie date i godzine dodania zadania
 function timeSet() {
   const time = new Date();
   const seconds =
@@ -101,17 +139,19 @@ function timeSet() {
   const hours = time.getHours() < 10 ? "0" + time.getHours() : time.getHours();
   const day = time.getDate() < 10 ? "0" + time.getDate() : time.getDate();
   const month =
-    time.getMonth() + 1 < 10 ?
-    "0" + (time.getMonth() + 1) :
-    time.getMonth() + 1;
+    time.getMonth() + 1 < 10
+      ? "0" + (time.getMonth() + 1)
+      : time.getMonth() + 1;
   const year =
     time.getFullYear() < 10 ? "0" + time.getFullYear() : time.getFullYear();
   clock.innerHTML = `${hours} : ${minutes} : ${seconds} || ${day} - ${month} - ${year} r.`;
   // document.querySelector('body').appendChild(clock)
-};
+}
 
 inputSearch.addEventListener("input", searchTask);
-form.addEventListener("submit", addTask);
+document
+  .querySelector("[data-new-tasks-form]")
+  .addEventListener("submit", addTask);
 
 // const removeTask = e => {
 //   // e.target.parentNode.remove();

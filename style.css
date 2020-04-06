@@ -1,3 +1,11 @@
+        :root {
+            --clr-primary: rgb(54, 112, 199);
+            --clr-light: #f4f4f4;
+            --clr-dark: #333;
+            --clr-warning: rgb(99, 36, 36);
+            --clr-green: greenyellow;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -6,15 +14,76 @@
         }
 
         body {
+            background-color: var(--clr-primary);
+            color: var(--clr-light);
             font-size: 20px;
             line-height: 1.5;
             margin-top: 200xp;
             width: 100%;
+            letter-spacing: 1.5px;
         }
 
-        form {
+        .all-tasks {
+            margin-left: 100px;
+            margin-top: 50px;
+        }
+
+        .task-list {
+            padding-left: 20px;
+            line-height: 1.8;
+            list-style: circle;
+        }
+
+        .new-lists {
+            display: flex;
+        }
+
+        .new {
+            background: transparent;
+            border: 0;
+            color: inherit;
+            border-bottom: 1px solid currentColor;
+            font-size: inherit;
+            outline: none;
+            transition: border-bottom 150ms ease-in;
+            order: 2;
+        }
+
+        /* .new:focus {
+            border-bottom-width: 2px;
+        } */
+        .new:focus::placeholder {
+            opacity: .2;
+        }
+
+        .active-list {
+            font-weight: bold;
+            color: var(--clr-green);
+            list-style: disc;
+
+        }
+
+        .btnNewList {
+            cursor: pointer;
+            background: 0;
+            border: 0;
+            padding: 0;
+            color: inherit;
+        }
+
+        .btnNewList.list {
+            font-size: 30px;
+            font-weight: bold;
+            transition: opacity 250ms ease-in;
+        }
+
+        .btnNewList.list:hover {
+            opacity: .5;
+        }
+
+        .new-tasks {
             width: 90%;
-            margin: 50px auto;
+            margin: 100px auto;
             display: flex;
             justify-content: space-around;
         }
@@ -26,9 +95,9 @@
             transition: 0.5s;
         }
 
-        input:focus {
-            border: 2px solid greenyellow;
-        }
+        /* input:focus {
+            border: 2px solid var(--clr-green);
+        } */
 
         .task {
             background: none;
@@ -52,8 +121,9 @@
 
 
         hr {
+            color: var(--clr-light);
             width: 50%;
-            margin: 0 auto;
+            margin: 50px auto;
             opacity: .3;
         }
 
@@ -61,13 +131,13 @@
             width: 90%;
             margin: 50px auto;
             border: 1px solid lightgray;
-            background-color: greenyellow;
+            background-color: var(--clr-green);
         }
 
         .taskBox {
-            display: flex;
+            /* display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: center; */
             margin: 5px 0;
         }
 
