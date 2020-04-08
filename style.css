@@ -29,6 +29,7 @@
         }
 
         .task-list {
+            width: auto;
             padding-left: 20px;
             line-height: 1.8;
             list-style: circle;
@@ -163,6 +164,18 @@
             border-radius: 25px;
             outline: none;
             background-color: greenyellow;
+        }
+
+        .deleteListBtn {
+            cursor: pointer;
+            background-color: red;
+            font-size: 18px;
+            padding: 5px 10px;
+            color: #fff;
+            border: none;
+            position: absolute;
+            right: 100px;
+            top: 100px;
         }
 
         .deleteBtn {

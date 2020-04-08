@@ -7,6 +7,10 @@ const listsContainer = document.querySelector("[data-lists]");
 const newListForm = document.querySelector("[data-new-list-form]");
 const newListInput = document.querySelector("[data-new-list-input]");
 const deleteListButton = document.querySelector('[data-delete-list-button]')
+
+const listDisplayContainer = document.querySelector('[data-list-display-container]')
+const listTitleElement = document.querySelector('[data-list-title]')
+
 const inputSearch = document.querySelector(".search");
 const inputAdd = document.querySelector(".addTask");
 const liElements = document.getElementsByClassName("taskBox");
@@ -60,6 +64,19 @@ function save() {
 
 function render() {
   clearElement(listsContainer);
+  renderLists()
+
+  const selectedList = lists.find(list => list.id === selectedListId)
+  //if list is activ hide or show tasks list
+  if (selectedListId == null) {
+    listDisplayContainer.style.display = 'none'
+  } else {
+    listDisplayContainer.style.display = ''
+    listTitleElement.textContent = selectedList.name;
+  }
+}
+
+function renderLists() {
   lists.forEach(list => {
     const listElement = document.createElement("li");
     listElement.dataset.listId = list.id;
@@ -118,7 +135,7 @@ const addTask = e => {
   editBtn.className = "editBtn";
 
   if (titleTask === "" || titleTask.length <= 3) {
-    alert("Wpisz minimum 6 znakow!");
+    alert("Write at least 6 characters!");
     inputAdd.value = "";
     return;
   }

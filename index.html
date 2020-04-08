@@ -30,22 +30,22 @@
         />
         <button class="btnNewList list" aria-label="create new list">+</button>
       </form>
+      <button class="deleteListBtn" data-delete-list-button>
+        Delete list
+      </button>
     </div>
-    <hr />
-    <form class="new-tasks" data-new-tasks-form>
-      <input type="text" class="search" placeholder="Search..." />
-      <input type="text" class="addTask" placeholder="Task..." />
-      <input type="submit" class="addBtn" value="Add task" />
-      <input
-        type="submit"
-        class="deleteBtn"
-        value="Delete list"
-        data-delete-list-button
-      />
-    </form>
-    <hr />
-    <h1>List of tasks:<span>0</span></h1>
-    <div class="wrapper"></div>
+    <div class="tasks-container" data-list-display-container>
+      <h1 data-list-title>List title</h1>
+      <form class="new-tasks" data-new-tasks-form>
+        <input type="text" class="search" placeholder="Search..." />
+        <input type="text" class="addTask" placeholder="Task..." />
+        <input type="submit" class="addBtn" value="Add task" />
+      </form>
+      <hr />
+      <h1>List of tasks:<span>0</span></h1>
+      <div class="wrapper"></div>
+    </div>
+
     <script src="main.js"></script>
   </body>
 </html>
