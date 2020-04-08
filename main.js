@@ -1,13 +1,5 @@
-let lists = [
-  {
-    id: 1,
-    name: "aaaaaa"
-  },
-  {
-    id: 2,
-    name: "todo"
-  }
-];
+const LOCAL_STORAGE_LIST_KEY = 'task.lists'
+let lists = JSON.parse(localStorage.getItem(LOCAL_STORAGE_LIST_KEY)) || [];
 let toDoList = [];
 const listsContainer = document.querySelector("[data-lists]");
 const newListForm = document.querySelector("[data-new-list-form]");
@@ -28,11 +20,24 @@ newListForm.addEventListener("submit", e => {
   const list = createList(listName);
   newListInput.value = null;
   lists.push(list);
-  render();
+  saveAndRender()
 });
 
 function createList(name) {
-  return { id: Date.now().toString(), name: name, tasks: [] };
+  return {
+    id: Date.now().toString(),
+    name: name,
+    tasks: []
+  };
+}
+//Only functions call
+function saveAndRender() {
+  save()
+  render()
+}
+//Function which save lists to loacalstorage
+function save() {
+  localStorage.setItem(LOCAL_STORAGE_LIST_KEY, JSON.stringify(lists))
 }
 
 function render() {
@@ -45,6 +50,7 @@ function render() {
     listsContainer.appendChild(listElement);
   });
 }
+
 function clearElement(element) {
   while (element.firstChild) {
     element.removeChild(element.firstChild);
@@ -139,9 +145,9 @@ function timeSet() {
   const hours = time.getHours() < 10 ? "0" + time.getHours() : time.getHours();
   const day = time.getDate() < 10 ? "0" + time.getDate() : time.getDate();
   const month =
-    time.getMonth() + 1 < 10
-      ? "0" + (time.getMonth() + 1)
-      : time.getMonth() + 1;
+    time.getMonth() + 1 < 10 ?
+    "0" + (time.getMonth() + 1) :
+    time.getMonth() + 1;
   const year =
     time.getFullYear() < 10 ? "0" + time.getFullYear() : time.getFullYear();
   clock.innerHTML = `${hours} : ${minutes} : ${seconds} || ${day} - ${month} - ${year} r.`;
