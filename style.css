@@ -60,7 +60,10 @@
             font-weight: bold;
             color: var(--clr-green);
             list-style: disc;
+        }
 
+        .list-name {
+            cursor: pointer;
         }
 
         .btnNewList {

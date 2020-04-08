@@ -1,5 +1,7 @@
 const LOCAL_STORAGE_LIST_KEY = 'task.lists'
+const LOCAL_STORAGE_SELECTED_LIST_ID_KEY = 'task.selectedListId'
 let lists = JSON.parse(localStorage.getItem(LOCAL_STORAGE_LIST_KEY)) || [];
+let selectedListId = localStorage.getItem(LOCAL_STORAGE_SELECTED_LIST_ID_KEY)
 let toDoList = [];
 const listsContainer = document.querySelector("[data-lists]");
 const newListForm = document.querySelector("[data-new-list-form]");
@@ -12,6 +14,14 @@ const wrapper = document.querySelector(".wrapper");
 let taskNumber = document.querySelector("h1 span");
 const clock = document.createElement("div");
 clock.className = "clock";
+
+//Selecting which ID we selected
+listsContainer.addEventListener('click', e => {
+  if (e.target.tagName.toLowerCase() === 'li') {
+    selectedListId = e.target.dataset.listId;
+    saveAndRender()
+  }
+})
 
 newListForm.addEventListener("submit", e => {
   e.preventDefault();
@@ -37,7 +47,8 @@ function saveAndRender() {
 }
 //Function which save lists to loacalstorage
 function save() {
-  localStorage.setItem(LOCAL_STORAGE_LIST_KEY, JSON.stringify(lists))
+  localStorage.setItem(LOCAL_STORAGE_LIST_KEY, JSON.stringify(lists)) //saving lists
+  localStorage.setItem(LOCAL_STORAGE_SELECTED_LIST_ID_KEY, selectedListId) //saving selected list ID
 }
 
 function render() {
@@ -47,6 +58,9 @@ function render() {
     listElement.dataset.listId = list.id;
     listElement.classList.add("list-name");
     listElement.innerText = list.name;
+    if (list.id === selectedListId) {
+      listElement.classList.add('active-list')
+    }
     listsContainer.appendChild(listElement);
   });
 }
