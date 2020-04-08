@@ -6,6 +6,7 @@ let toDoList = [];
 const listsContainer = document.querySelector("[data-lists]");
 const newListForm = document.querySelector("[data-new-list-form]");
 const newListInput = document.querySelector("[data-new-list-input]");
+const deleteListButton = document.querySelector('[data-delete-list-button]')
 const inputSearch = document.querySelector(".search");
 const inputAdd = document.querySelector(".addTask");
 const liElements = document.getElementsByClassName("taskBox");
@@ -21,6 +22,12 @@ listsContainer.addEventListener('click', e => {
     selectedListId = e.target.dataset.listId;
     saveAndRender()
   }
+})
+//Deleted active/selected list
+deleteListButton.addEventListener('click', e => {
+  lists = lists.filter(list => list.id !== selectedListId)
+  selectedListId = null;
+  saveAndRender()
 })
 
 newListForm.addEventListener("submit", e => {
