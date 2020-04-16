@@ -2,7 +2,7 @@ const LOCAL_STORAGE_LIST_KEY = "task.lists";
 const LOCAL_STORAGE_SELECTED_LIST_ID_KEY = "task.selectedListId";
 let lists = JSON.parse(localStorage.getItem(LOCAL_STORAGE_LIST_KEY)) || [];
 let selectedListId = localStorage.getItem(LOCAL_STORAGE_SELECTED_LIST_ID_KEY);
-let toDoList = [];
+// let toDoList = [];
 const listsContainer = document.querySelector("[data-lists]");
 const newListForm = document.querySelector("[data-new-list-form]");
 const newListInput = document.querySelector("[data-new-list-input]");
@@ -18,14 +18,14 @@ const newTaskForm = document.querySelector('[data-new-task-form]')
 const newTaskInput = document.querySelector('[data-new-task-input]')
 const clearCompleteTasksButton = document.querySelector('[data-clear-complete-tasks-button]')
 
-//Selecting which ID was selected
+//Select which list ID was selected
 listsContainer.addEventListener("click", (e) => {
   if (e.target.tagName.toLowerCase() === "li") {
     selectedListId = e.target.dataset.listId;
     saveAndRender();
   }
 });
-
+//Check selected tasks to update number of tasks
 tasksContainer.addEventListener('click', e => {
   if (e.target.tagName.toLowerCase() === 'input') {
     const selectedList = lists.find(list => list.id === selectedListId)
@@ -41,15 +41,12 @@ clearCompleteTasksButton.addEventListener('click', e => {
   selectedList.tasks = selectedList.tasks.filter(task => !task.complete)
   saveAndRender()
 })
-
-
 //Deleted active/selected list
 deleteListButton.addEventListener("click", (e) => {
   lists = lists.filter((list) => list.id !== selectedListId);
   selectedListId = null;
   saveAndRender();
 });
-
 //Create new list
 newListForm.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -60,7 +57,7 @@ newListForm.addEventListener("submit", (e) => {
   lists.push(list);
   saveAndRender();
 });
-//Create new task
+//Create new task,push it to array,
 newTaskForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const taskName = newTaskInput.value;
@@ -72,6 +69,14 @@ newTaskForm.addEventListener("submit", (e) => {
   saveAndRender();
 });
 
+// //Change bacground color for odd tasks
+// const addBackground = () => {
+//   const odd = document.querySelectorAll("wrapper div:nth-child(odd)"); // zamiast div bylo li
+//   for (let i = 0; i < odd.length; i++) {
+//     odd[i].style.backgroundColor = "#f4f4f4";
+//   }
+// };
+
 function createList(name) {
   return {
     id: Date.now().toString(),
@@ -80,11 +85,12 @@ function createList(name) {
   };
 }
 
-function createTask(name) {
+function createTask(name, time) {
   return {
     id: Date.now().toString(),
     name: name,
-    complete: false
+    complete: false,
+    time: time
   };
 }
 //Only functions call
@@ -97,7 +103,7 @@ function save() {
   localStorage.setItem(LOCAL_STORAGE_LIST_KEY, JSON.stringify(lists)); //saving lists
   localStorage.setItem(LOCAL_STORAGE_SELECTED_LIST_ID_KEY, selectedListId); //saving selected list ID
 }
-
+//Show and hide active list
 function render() {
   clearElement(listsContainer);
   renderLists();
@@ -114,7 +120,7 @@ function render() {
   }
 }
 //Create new task
-function renderTasks(selectedList) {
+function renderTasks(selectedList, time) {
   selectedList.tasks.forEach(task => {
     const taskElement = document.importNode(taskTemplate.content, true) //import template from html, true - to import all inside of div
     const checkBox = taskElement.querySelector('input')
@@ -123,17 +129,45 @@ function renderTasks(selectedList) {
     const label = taskElement.querySelector('label')
     label.htmlFor = task.id
     label.append(task.name)
+    // const clock = document.createElement("div");
+    // const timeFun = timeSet(time)
+    // clock.innerHTML = timeFun
+    // taskElement.appendChild(clock)
+    const date = taskElement.querySelector('.date')
+    date.append(timeSet(time))
+    // timeSet()
     tasksContainer.appendChild(taskElement)
   })
 }
+//Import date and time task was added
+function timeSet() {
+  const taskElement = document.importNode(taskTemplate.content, true) //import template from html, true - to import all inside of div
+  const date = taskElement.querySelector('.date')
+  const time = new Date();
+  const seconds =
+    time.getSeconds() < 10 ? "0" + time.getSeconds() : time.getSeconds();
+  const minutes =
+    time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes();
+  const hours = time.getHours() < 10 ? "0" + time.getHours() : time.getHours();
+  const day = time.getDate() < 10 ? "0" + time.getDate() : time.getDate();
+  const month =
+    time.getMonth() + 1 < 10 ?
+    "0" + (time.getMonth() + 1) :
+    time.getMonth() + 1;
+  const year =
+    time.getFullYear() < 10 ? "0" + time.getFullYear() : time.getFullYear();
+  date.innerHTML = `${hours} : ${minutes} : ${seconds} || ${day} - ${month} - ${year} r.`;
+  tasksContainer.appendChild(taskElement)
 
+}
+// timeSet()
 //Counting number of tasks without selected/deleted tasks
 function renderTaskCount(selectedList) {
   const incompleteTaskCount = selectedList.tasks.filter(task => !task.complete).length
   const taskString = incompleteTaskCount === 1 ? "task" : "tasks";
   listCountElement.innerText = `${incompleteTaskCount} ${taskString} remaining`
 }
-
+//Create new list
 function renderLists() {
   lists.forEach((list) => {
     const listElement = document.createElement("li");
@@ -174,14 +208,6 @@ render();
 // const clock = document.createElement("div");
 // clock.className = "clock";
 
-
-
-// const abc = () => {
-//   clock.className = 'clock'
-//   document.querySelector('body').appendChild(clock)
-//   timeSet()
-// }
-// abc()
 
 const searchTask = (e) => {
   const searchText = e.target.value.toLowerCase();
@@ -247,32 +273,32 @@ const searchTask = (e) => {
 //   });
 // };
 
-//Zmiana kolor t?a dla nieparzystych
-const addBackground = () => {
-  const odd = document.querySelectorAll("wrapper div:nth-child(odd)"); // zamiast div bylo li
-  for (let i = 0; i < odd.length; i++) {
-    odd[i].style.backgroundColor = "#f4f4f4";
-  }
-};
+// //Zmiana kolor t?a dla nieparzystych
+// const addBackground = () => {
+//   const odd = document.querySelectorAll("wrapper div:nth-child(odd)"); // zamiast div bylo li
+//   for (let i = 0; i < odd.length; i++) {
+//     odd[i].style.backgroundColor = "#f4f4f4";
+//   }
+// };
 
-//Pobieranie date i godzine dodania zadania
-function timeSet() {
-  const time = new Date();
-  const seconds =
-    time.getSeconds() < 10 ? "0" + time.getSeconds() : time.getSeconds();
-  const minutes =
-    time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes();
-  const hours = time.getHours() < 10 ? "0" + time.getHours() : time.getHours();
-  const day = time.getDate() < 10 ? "0" + time.getDate() : time.getDate();
-  const month =
-    time.getMonth() + 1 < 10 ?
-    "0" + (time.getMonth() + 1) :
-    time.getMonth() + 1;
-  const year =
-    time.getFullYear() < 10 ? "0" + time.getFullYear() : time.getFullYear();
-  clock.innerHTML = `${hours} : ${minutes} : ${seconds} || ${day} - ${month} - ${year} r.`;
-  // document.querySelector('body').appendChild(clock)
-}
+// //Pobieranie date i godzine dodania zadania
+// function timeSet() {
+//   const time = new Date();
+//   const seconds =
+//     time.getSeconds() < 10 ? "0" + time.getSeconds() : time.getSeconds();
+//   const minutes =
+//     time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes();
+//   const hours = time.getHours() < 10 ? "0" + time.getHours() : time.getHours();
+//   const day = time.getDate() < 10 ? "0" + time.getDate() : time.getDate();
+//   const month =
+//     time.getMonth() + 1 < 10 ?
+//     "0" + (time.getMonth() + 1) :
+//     time.getMonth() + 1;
+//   const year =
+//     time.getFullYear() < 10 ? "0" + time.getFullYear() : time.getFullYear();
+//   clock.innerHTML = `${hours} : ${minutes} : ${seconds} || ${day} - ${month} - ${year} r.`;
+//   // document.querySelector('body').appendChild(clock)
+// }
 
 inputSearch.addEventListener("input", searchTask);
 document
