@@ -7,20 +7,16 @@ const listsContainer = document.querySelector("[data-lists]");
 const newListForm = document.querySelector("[data-new-list-form]");
 const newListInput = document.querySelector("[data-new-list-input]");
 const deleteListButton = document.querySelector("[data-delete-list-button]");
-
 const listDisplayContainer = document.querySelector(
   "[data-list-display-container]"
 );
 const listTitleElement = document.querySelector("[data-list-title]");
-
-const inputSearch = document.querySelector(".search");
-const inputAdd = document.querySelector(".addTask");
-const liElements = document.getElementsByClassName("taskBox");
-const form = document.querySelector("form");
-const wrapper = document.querySelector(".wrapper");
-let taskNumber = document.querySelector("h1 span");
-const clock = document.createElement("div");
-clock.className = "clock";
+const listCountElement = document.querySelector("[data-list-count]");
+const tasksContainer = document.querySelector("[data-tasks]")
+const taskTemplate = document.getElementById('task-template')
+const newTaskForm = document.querySelector('[data-new-task-form]')
+const newTaskInput = document.querySelector('[data-new-task-input]')
+const clearCompleteTasksButton = document.querySelector('[data-clear-complete-tasks-button]')
 
 //Selecting which ID was selected
 listsContainer.addEventListener("click", (e) => {
@@ -29,6 +25,24 @@ listsContainer.addEventListener("click", (e) => {
     saveAndRender();
   }
 });
+
+tasksContainer.addEventListener('click', e => {
+  if (e.target.tagName.toLowerCase() === 'input') {
+    const selectedList = lists.find(list => list.id === selectedListId)
+    const selectedTask = selectedList.tasks.find(task => task.id === e.target.id)
+    selectedTask.complete = e.target.checked
+    save()
+    renderTaskCount(selectedList)
+  }
+})
+//Deleted selected tasks from list
+clearCompleteTasksButton.addEventListener('click', e => {
+  const selectedList = lists.find(list => list.id === selectedListId)
+  selectedList.tasks = selectedList.tasks.filter(task => !task.complete)
+  saveAndRender()
+})
+
+
 //Deleted active/selected list
 deleteListButton.addEventListener("click", (e) => {
   lists = lists.filter((list) => list.id !== selectedListId);
@@ -36,6 +50,7 @@ deleteListButton.addEventListener("click", (e) => {
   saveAndRender();
 });
 
+//Create new list
 newListForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const listName = newListInput.value;
@@ -45,12 +60,31 @@ newListForm.addEventListener("submit", (e) => {
   lists.push(list);
   saveAndRender();
 });
+//Create new task
+newTaskForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const taskName = newTaskInput.value;
+  if (taskName == null || taskName === "") return;
+  const task = createTask(taskName);
+  newTaskInput.value = null;
+  const selectedList = lists.find(list => list.id === selectedListId)
+  selectedList.tasks.push(task)
+  saveAndRender();
+});
 
 function createList(name) {
   return {
     id: Date.now().toString(),
     name: name,
-    tasks: [],
+    tasks: []
+  };
+}
+
+function createTask(name) {
+  return {
+    id: Date.now().toString(),
+    name: name,
+    complete: false
   };
 }
 //Only functions call
@@ -67,15 +101,37 @@ function save() {
 function render() {
   clearElement(listsContainer);
   renderLists();
-
   const selectedList = lists.find((list) => list.id === selectedListId);
   //if list is activ hide or show tasks list
   if (selectedListId == null) {
     listDisplayContainer.style.display = "none";
   } else {
     listDisplayContainer.style.display = "";
-    listTitleElement.textContent = selectedList.name;
+    listTitleElement.innerText = selectedList.name.toUpperCase();
+    renderTaskCount(selectedList)
+    clearElement(tasksContainer)
+    renderTasks(selectedList)
   }
+}
+//Create new task
+function renderTasks(selectedList) {
+  selectedList.tasks.forEach(task => {
+    const taskElement = document.importNode(taskTemplate.content, true) //import template from html, true - to import all inside of div
+    const checkBox = taskElement.querySelector('input')
+    checkBox.id = task.id
+    checkBox.checked = task.complete
+    const label = taskElement.querySelector('label')
+    label.htmlFor = task.id
+    label.append(task.name)
+    tasksContainer.appendChild(taskElement)
+  })
+}
+
+//Counting number of tasks without selected/deleted tasks
+function renderTaskCount(selectedList) {
+  const incompleteTaskCount = selectedList.tasks.filter(task => !task.complete).length
+  const taskString = incompleteTaskCount === 1 ? "task" : "tasks";
+  listCountElement.innerText = `${incompleteTaskCount} ${taskString} remaining`
 }
 
 function renderLists() {
@@ -98,6 +154,28 @@ function clearElement(element) {
 }
 render();
 
+//------------------------------------------------
+//------------------------------------------------
+//------------------------------------------------
+//------------------------------------------------
+//------------------------------------------------
+//------------------------------------------------
+//------------------------------------------------
+//------------------------------------------------
+//------------------------------------------------
+
+
+// const inputSearch = document.querySelector(".search");
+// const inputAdd = document.querySelector(".addTask");
+// const liElements = document.getElementsByClassName("taskBox");
+// const form = document.querySelector("form");
+// const wrapper = document.querySelector(".wrapper");
+// let taskNumber = document.querySelector("h1 span");
+// const clock = document.createElement("div");
+// clock.className = "clock";
+
+
+
 // const abc = () => {
 //   clock.className = 'clock'
 //   document.querySelector('body').appendChild(clock)
@@ -114,71 +192,60 @@ const searchTask = (e) => {
   wrapper.textContent = "";
   tasks.forEach((li) => wrapper.appendChild(li));
 };
-const removeNewTask = (e) => {
-  e.target.parentNode.remove();
-  const index = e.target.parentNode.dataset.key;
-  toDoList.splice(index, 1);
-  taskNumber.textContent = liElements.length;
-  // renderList();
-};
+// const removeNewTask = (e) => {
+//   e.target.parentNode.remove();
+//   const index = e.target.parentNode.dataset.key;
+//   toDoList.splice(index, 1);
+//   taskNumber.textContent = liElements.length;
+//   // renderList();
+// };
 
-//new------------------
-function createTask(name) {
-  return {
-    id: Date.now().toString(),
-    name: name,
-    tasks: [],
-  };
-}
 
-const addTask = (e) => {
-  e.preventDefault();
-  const taskBox = document.createElement("div");
-  taskBox.className = "taskBox";
-  const titleTask = inputAdd.value;
-  // const task = document.createElement("textarea");
-  const task = createTask(titleTask); //new--------------
-  task.className = "task";
-  task.disabled = true;
-  task.type = "text";
-  const deleteBtn = document.createElement("button");
-  deleteBtn.className = "deleteBtn";
-  const editBtn = document.createElement("button");
-  editBtn.className = "editBtn";
+// const addTask = (e) => {
+//   e.preventDefault();
+//   const taskBox = document.createElement("div");
+//   taskBox.className = "taskBox";
+//   const titleTask = inputAdd.value;
+//   // const task = document.createElement("textarea");
+//   const task = createTask(titleTask); //new--------------
+//   task.className = "task";
+//   task.disabled = true;
+//   task.type = "text";
+//   const deleteBtn = document.createElement("button");
+//   deleteBtn.className = "deleteBtn";
+//   const editBtn = document.createElement("button");
+//   editBtn.className = "editBtn";
 
-  if (titleTask === "" || titleTask.length <= 3) {
-    alert("Write at least 6 characters!");
-    inputAdd.value = "";
-    return;
-  }
+//   if (titleTask === "" || titleTask.length <= 3) {
+//     alert("Write at least 6 characters!");
+//     inputAdd.value = "";
+//     return;
+//   }
 
-  deleteBtn.appendChild(document.createTextNode("X"));
-  editBtn.appendChild(document.createTextNode("EDIT"));
-  task.innerHTML = titleTask;
-  toDoList.push(task);
-  taskBox.append(task);
-  taskBox.appendChild(editBtn);
-  taskBox.appendChild(deleteBtn);
-  wrapper.appendChild(taskBox);
-  const selectedList = lists.find((list) => list.id === selectedListId); //new
-  selectedList.tasks.push(task); //new
-  saveAndRender(); //new
-  addBackground();
-  inputAdd.value = "";
-  taskNumber.textContent = liElements.length;
-  taskBox.querySelector(".deleteBtn").addEventListener("click", removeNewTask);
-  taskBox.querySelector(".editBtn").addEventListener("click", () => {
-    task.disabled = !task.disabled;
-  });
-};
+//   deleteBtn.appendChild(document.createTextNode("X"));
+//   editBtn.appendChild(document.createTextNode("EDIT"));
+//   task.innerHTML = titleTask;
+//   toDoList.push(task);
+//   taskBox.append(task);
+//   taskBox.appendChild(editBtn);
+//   taskBox.appendChild(deleteBtn);
+//   wrapper.appendChild(taskBox);
+//   addBackground();
+//   inputAdd.value = "";
+//   taskNumber.textContent = liElements.length;
+//   taskBox.querySelector(".deleteBtn").addEventListener("click", removeNewTask);
+//   taskBox.querySelector(".editBtn").addEventListener("click", () => {
+//     task.disabled = !task.disabled;
+//   });
+// };
 
-const renderList = () => {
-  wrapper.textContent = "";
-  toDoList.forEach((toDoElement, key) => {
-    toDoElement.dataset.key = key;
-    wrapper.appendChild(toDoElement);
-  });
-};
+// const renderList = () => {
+//   wrapper.textContent = "";
+//   toDoList.forEach((toDoElement, key) => {
+//     toDoElement.dataset.key = key;
+//     wrapper.appendChild(toDoElement);
+//   });
+// };
 
 //Zmiana kolor t?a dla nieparzystych
 const addBackground = () => {
@@ -198,9 +265,9 @@ function timeSet() {
   const hours = time.getHours() < 10 ? "0" + time.getHours() : time.getHours();
   const day = time.getDate() < 10 ? "0" + time.getDate() : time.getDate();
   const month =
-    time.getMonth() + 1 < 10
-      ? "0" + (time.getMonth() + 1)
-      : time.getMonth() + 1;
+    time.getMonth() + 1 < 10 ?
+    "0" + (time.getMonth() + 1) :
+    time.getMonth() + 1;
   const year =
     time.getFullYear() < 10 ? "0" + time.getFullYear() : time.getFullYear();
   clock.innerHTML = `${hours} : ${minutes} : ${seconds} || ${day} - ${month} - ${year} r.`;
