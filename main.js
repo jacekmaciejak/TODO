@@ -12,11 +12,13 @@ const listDisplayContainer = document.querySelector(
 );
 const listTitleElement = document.querySelector("[data-list-title]");
 const listCountElement = document.querySelector("[data-list-count]");
-const tasksContainer = document.querySelector("[data-tasks]")
-const taskTemplate = document.getElementById('task-template')
-const newTaskForm = document.querySelector('[data-new-task-form]')
-const newTaskInput = document.querySelector('[data-new-task-input]')
-const clearCompleteTasksButton = document.querySelector('[data-clear-complete-tasks-button]')
+const tasksContainer = document.querySelector("[data-tasks]");
+const taskTemplate = document.getElementById("task-template");
+const newTaskForm = document.querySelector("[data-new-task-form]");
+const newTaskInput = document.querySelector("[data-new-task-input]");
+const clearCompleteTasksButton = document.querySelector(
+  "[data-clear-complete-tasks-button]"
+);
 
 //Select which list ID was selected
 listsContainer.addEventListener("click", (e) => {
@@ -26,21 +28,23 @@ listsContainer.addEventListener("click", (e) => {
   }
 });
 //Check selected tasks to update number of tasks
-tasksContainer.addEventListener('click', e => {
-  if (e.target.tagName.toLowerCase() === 'input') {
-    const selectedList = lists.find(list => list.id === selectedListId)
-    const selectedTask = selectedList.tasks.find(task => task.id === e.target.id)
-    selectedTask.complete = e.target.checked
-    save()
-    renderTaskCount(selectedList)
+tasksContainer.addEventListener("click", (e) => {
+  if (e.target.tagName.toLowerCase() === "input") {
+    const selectedList = lists.find((list) => list.id === selectedListId);
+    const selectedTask = selectedList.tasks.find(
+      (task) => task.id === e.target.id
+    );
+    selectedTask.complete = e.target.checked;
+    save();
+    renderTaskCount(selectedList);
   }
-})
+});
 //Deleted selected tasks from list
-clearCompleteTasksButton.addEventListener('click', e => {
-  const selectedList = lists.find(list => list.id === selectedListId)
-  selectedList.tasks = selectedList.tasks.filter(task => !task.complete)
-  saveAndRender()
-})
+clearCompleteTasksButton.addEventListener("click", (e) => {
+  const selectedList = lists.find((list) => list.id === selectedListId);
+  selectedList.tasks = selectedList.tasks.filter((task) => !task.complete);
+  saveAndRender();
+});
 //Deleted active/selected list
 deleteListButton.addEventListener("click", (e) => {
   lists = lists.filter((list) => list.id !== selectedListId);
@@ -64,8 +68,8 @@ newTaskForm.addEventListener("submit", (e) => {
   if (taskName == null || taskName === "") return;
   const task = createTask(taskName);
   newTaskInput.value = null;
-  const selectedList = lists.find(list => list.id === selectedListId)
-  selectedList.tasks.push(task)
+  const selectedList = lists.find((list) => list.id === selectedListId);
+  selectedList.tasks.push(task);
   saveAndRender();
 });
 
@@ -81,7 +85,7 @@ function createList(name) {
   return {
     id: Date.now().toString(),
     name: name,
-    tasks: []
+    tasks: [],
   };
 }
 
@@ -90,7 +94,7 @@ function createTask(name, time) {
     id: Date.now().toString(),
     name: name,
     complete: false,
-    time: time
+    time: time,
   };
 }
 //Only functions call
@@ -114,35 +118,31 @@ function render() {
   } else {
     listDisplayContainer.style.display = "";
     listTitleElement.innerText = selectedList.name.toUpperCase();
-    renderTaskCount(selectedList)
-    clearElement(tasksContainer)
-    renderTasks(selectedList)
+    renderTaskCount(selectedList);
+    clearElement(tasksContainer);
+    renderTasks(selectedList);
   }
 }
 //Create new task
-function renderTasks(selectedList, time) {
-  selectedList.tasks.forEach(task => {
-    const taskElement = document.importNode(taskTemplate.content, true) //import template from html, true - to import all inside of div
-    const checkBox = taskElement.querySelector('input')
-    checkBox.id = task.id
-    checkBox.checked = task.complete
-    const label = taskElement.querySelector('label')
-    label.htmlFor = task.id
-    label.append(task.name)
-    // const clock = document.createElement("div");
-    // const timeFun = timeSet(time)
-    // clock.innerHTML = timeFun
-    // taskElement.appendChild(clock)
-    const date = taskElement.querySelector('.date')
-    date.append(timeSet(time))
-    // timeSet()
-    tasksContainer.appendChild(taskElement)
-  })
+function renderTasks(selectedList) {
+  selectedList.tasks.forEach((task) => {
+    const taskElement = document.importNode(taskTemplate.content, true); //import template from html, true - to import all inside of div
+    const checkBox = taskElement.querySelector("input");
+    checkBox.id = task.id;
+    checkBox.checked = task.complete;
+    const label = taskElement.querySelector("label");
+    label.htmlFor = task.id;
+    label.append(task.name);
+    const date = taskElement.querySelector(".date");
+    date.htmlFor = task.id;
+    date.append(getTime(task.time));
+    tasksContainer.appendChild(taskElement);
+  });
 }
-//Import date and time task was added
-function timeSet() {
-  const taskElement = document.importNode(taskTemplate.content, true) //import template from html, true - to import all inside of div
-  const date = taskElement.querySelector('.date')
+//Import date and time of task added
+function getTime() {
+  const taskElement = document.importNode(taskTemplate.content, true); //import template from html, true - to import all inside of div
+  const date = taskElement.querySelector(".date");
   const time = new Date();
   const seconds =
     time.getSeconds() < 10 ? "0" + time.getSeconds() : time.getSeconds();
@@ -151,21 +151,21 @@ function timeSet() {
   const hours = time.getHours() < 10 ? "0" + time.getHours() : time.getHours();
   const day = time.getDate() < 10 ? "0" + time.getDate() : time.getDate();
   const month =
-    time.getMonth() + 1 < 10 ?
-    "0" + (time.getMonth() + 1) :
-    time.getMonth() + 1;
+    time.getMonth() + 1 < 10
+      ? "0" + (time.getMonth() + 1)
+      : time.getMonth() + 1;
   const year =
     time.getFullYear() < 10 ? "0" + time.getFullYear() : time.getFullYear();
-  date.innerHTML = `${hours} : ${minutes} : ${seconds} || ${day} - ${month} - ${year} r.`;
-  tasksContainer.appendChild(taskElement)
-
+  date.innerHTML = `${hours}:${minutes}:${seconds} || ${day}-${month}-${year}r.`;
+  return date;
 }
-// timeSet()
 //Counting number of tasks without selected/deleted tasks
 function renderTaskCount(selectedList) {
-  const incompleteTaskCount = selectedList.tasks.filter(task => !task.complete).length
+  const incompleteTaskCount = selectedList.tasks.filter(
+    (task) => !task.complete
+  ).length;
   const taskString = incompleteTaskCount === 1 ? "task" : "tasks";
-  listCountElement.innerText = `${incompleteTaskCount} ${taskString} remaining`
+  listCountElement.innerText = `${incompleteTaskCount} ${taskString} remaining`;
 }
 //Create new list
 function renderLists() {
@@ -198,7 +198,6 @@ render();
 //------------------------------------------------
 //------------------------------------------------
 
-
 // const inputSearch = document.querySelector(".search");
 // const inputAdd = document.querySelector(".addTask");
 // const liElements = document.getElementsByClassName("taskBox");
@@ -208,16 +207,15 @@ render();
 // const clock = document.createElement("div");
 // clock.className = "clock";
 
-
-const searchTask = (e) => {
-  const searchText = e.target.value.toLowerCase();
-  let tasks = [...liElements];
-  tasks = toDoList.filter((li) =>
-    li.textContent.toLowerCase().includes(searchText)
-  );
-  wrapper.textContent = "";
-  tasks.forEach((li) => wrapper.appendChild(li));
-};
+// const searchTask = (e) => {
+//   const searchText = e.target.value.toLowerCase();
+//   let tasks = [...liElements];
+//   tasks = toDoList.filter((li) =>
+//     li.textContent.toLowerCase().includes(searchText)
+//   );
+//   wrapper.textContent = "";
+//   tasks.forEach((li) => wrapper.appendChild(li));
+// };
 // const removeNewTask = (e) => {
 //   e.target.parentNode.remove();
 //   const index = e.target.parentNode.dataset.key;
@@ -225,7 +223,6 @@ const searchTask = (e) => {
 //   taskNumber.textContent = liElements.length;
 //   // renderList();
 // };
-
 
 // const addTask = (e) => {
 //   e.preventDefault();
@@ -300,10 +297,10 @@ const searchTask = (e) => {
 //   // document.querySelector('body').appendChild(clock)
 // }
 
-inputSearch.addEventListener("input", searchTask);
-document
-  .querySelector("[data-new-tasks-form]")
-  .addEventListener("submit", addTask);
+// inputSearch.addEventListener("input", searchTask);
+// document
+//   .querySelector("[data-new-tasks-form]")
+//   .addEventListener("submit", addTask);
 
 // const removeTask = e => {
 //   // e.target.parentNode.remove();

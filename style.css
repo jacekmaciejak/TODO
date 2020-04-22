@@ -95,7 +95,7 @@ body {
 
 .todo-list {
   margin-top: 50px;
-  width: 500px;
+  width: 600px;
   background: var(--clr-light);
   color: var(--clr-dark);
   padding: 30px;
@@ -138,6 +138,8 @@ body {
 .task {
   position: relative;
   margin-bottom: 1.25rem;
+  display: flex;
+  justify-content: space-between;
 }
 
 .task::after {
